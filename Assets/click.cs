@@ -28,6 +28,13 @@ public class click : MonoBehaviour
 
                         }
                     }
+                    if(Input.GetMouseButtonDown(1))
+                    {
+                        if (hit.collider.CompareTag("Map"))
+                        {
+                            hit.collider.GetComponent<editablemesh>().LowerVertice(hit.point);
+                        }
+                    }
                 }
     }
 }

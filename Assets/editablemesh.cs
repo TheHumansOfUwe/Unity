@@ -60,4 +60,27 @@ public class editablemesh : MonoBehaviour
         }*/
 
     }
+
+    public void LowerVertice(Vector3 transform)
+    {
+        int nearest = -1;
+        float nearestSqDist = 10000000000.0f;
+        for (int i = 0; i < vertices.Length; i++) {
+            float sqDist = (vertices[i] - transform).sqrMagnitude;
+			
+            if (sqDist < nearestSqDist) {
+                nearest = i;
+                nearestSqDist = sqDist;
+            }
+        }
+
+        if (nearest > -1)
+        {
+            vertices[nearest] -= Vector3.up;
+            mesh.vertices = vertices;
+            mesh.RecalculateBounds(); 
+            GetComponent<MeshCollider>().sharedMesh = null;
+            GetComponent<MeshCollider>().sharedMesh = mesh;
+        }
+    }
 }
