@@ -24,6 +24,15 @@ public class editablemesh : MonoBehaviour
         mesh.MarkDynamic();
         vertices = mesh.vertices;
         path = Application.persistentDataPath+"/map.flox";
+
+        var rotation = GetComponent<Transform>().rotation;
+        Vector3 transf = GetComponent<Transform>().position;
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource> { };
+        var buildsrc = new NavMeshBuildSource { };
+        buildsrc.sourceObject = mesh;
+        sources.Add(buildsrc);
+        NavMeshBuilder.BuildNavMeshData(settings, sources, mesh.bounds, transf, rotation);
+        UnityEditor.AI.NavMeshBuilder.BuildNavMesh();
     }
 
     public void serialize(){
@@ -90,6 +99,17 @@ public class editablemesh : MonoBehaviour
         print(mapData.ToArray().Length);
         mesh.SetVertices(mapData.ToArray());
         vertices = mapData.ToArray();
+
+
+        var rotation = GetComponent<Transform>().rotation;
+        Vector3 transf = GetComponent<Transform>().position;
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource> { };
+        var buildsrc = new NavMeshBuildSource { };
+        buildsrc.sourceObject = mesh;
+        sources.Add(buildsrc);
+        NavMeshBuilder.BuildNavMeshData(settings, sources, mesh.bounds, transf, rotation);
+        UnityEditor.AI.NavMeshBuilder.BuildNavMesh();
+
     }
     // Update is called once per frame
     void Update()

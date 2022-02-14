@@ -33,13 +33,13 @@ public bool right = false;
             return;
         }
 
-        if (Input.GetKeyDown("right"))
+        if (Input.GetKeyDown("e"))
         {
             right = true;
             startValue = endValue;
             endValue -= 90;
         }
-        else if (Input.GetKeyDown("left"))
+        else if (Input.GetKeyDown("q"))
         {
             right = true;
             startValue = endValue;

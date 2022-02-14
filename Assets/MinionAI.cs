@@ -42,7 +42,7 @@ public class MinionAI : MonoBehaviour
     {
         
 
-        bool canSettle = true;
+        bool canSettle = false;
 
         Collider[] colliders = Physics.OverlapBox(transform.position, new Vector3(6, 0.25f, 6));
 
