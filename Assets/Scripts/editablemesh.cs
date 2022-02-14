@@ -5,14 +5,17 @@ using System.Numerics;
 using UnityEngine;
 using UnityEngine.AI;
 using Vector3 = UnityEngine.Vector3;
+using System.IO;
 
 public class editablemesh : MonoBehaviour
 {
     // Start is called before the first frame update
     private Mesh mesh;
     private Vector3[] vertices;
+
     private NavMeshData navmesh;
     public NavMeshBuildSettings settings;
+    private string path = "";
 
     void Start()
     {
@@ -20,11 +23,74 @@ public class editablemesh : MonoBehaviour
         
         mesh.MarkDynamic();
         vertices = mesh.vertices;
-        settings.agentSlope = 360;
-        settings.agentClimb = 1000;
-
+        path = Application.persistentDataPath+"/map.flox";
     }
 
+    public void serialize(){
+        string s = "";
+        foreach (var item in mesh.vertices)
+        {
+            s += item.ToString() + "~";
+        }
+        s = s.Remove(s.Length - 1);
+        print(s);
+
+        StreamWriter writer = new StreamWriter(path, false);
+        writer.WriteLine(s);
+        writer.Close();
+        print(path);
+        }
+
+
+    public void loadmap(){
+        StreamReader reader = new StreamReader(path); 
+        string f = "";
+        List<Vector3> mapData = new List<Vector3>();
+        foreach (var c in reader.ReadToEnd())
+        {
+            if(c.ToString() == "~"){
+                string x = "";
+                string y = "";
+                string z = "";
+                int count = 1;
+                foreach (var g in f)
+                {
+                    if(g.ToString() == "(") {}else{
+                    if(g.ToString() == ")"){
+                        mapData.Add(new Vector3(float.Parse(x),float.Parse(y),float.Parse(z)));
+                        print("X: "+ x + " Y:" + y + " Z: " +z);
+
+                         x = "";
+                            y = "";
+                         z = "";
+                    }else{
+
+                        if(g.ToString()==","){
+                            count++;
+                        }else{
+                        if(count == 1){
+                            x += g.ToString();
+                        }else if(count == 2){
+                            y += g.ToString();
+                        }else if(count == 3){
+                            z += g.ToString();
+                        }
+                    }
+                    }
+                    }
+                }
+                f = "";
+            }else{
+                f += c.ToString();
+            }
+        }
+        mapData.Add(new Vector3(0.0f,0.0f,0.0f));
+        reader.Close();
+        print(mesh.vertices.Length);
+        print(mapData.ToArray().Length);
+        mesh.SetVertices(mapData.ToArray());
+        vertices = mapData.ToArray();
+    }
     // Update is called once per frame
     void Update()
     {
