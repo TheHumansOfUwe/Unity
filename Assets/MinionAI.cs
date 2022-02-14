@@ -65,6 +65,10 @@ public class MinionAI : MonoBehaviour
         {
             become_house();
         }
+        else
+        {
+            hasWondered = false;
+        }
     }
 
     Vector3 wander_point(float range)
