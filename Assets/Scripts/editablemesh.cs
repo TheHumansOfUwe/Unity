@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.AI;
 using Vector3 = UnityEngine.Vector3;
 
 public class editablemesh : MonoBehaviour
@@ -11,15 +11,18 @@ public class editablemesh : MonoBehaviour
     // Start is called before the first frame update
     private Mesh mesh;
     private Vector3[] vertices;
-    
+    private NavMeshData navmesh;
+    public NavMeshBuildSettings settings;
+
     void Start()
     {
         mesh = GetComponent<MeshFilter>().mesh;
+        
         mesh.MarkDynamic();
         vertices = mesh.vertices;
-        
+        settings.agentSlope = 360;
+        settings.agentClimb = 1000;
 
-       
     }
 
     // Update is called once per frame
@@ -35,10 +38,12 @@ public class editablemesh : MonoBehaviour
     {
         int nearest = -1;
         float nearestSqDist = 10000000000.0f;
-        for (int i = 0; i < vertices.Length; i++) {
+        for (int i = 0; i < vertices.Length; i++)
+        {
             float sqDist = (vertices[i] - transform).sqrMagnitude;
-			
-            if (sqDist < nearestSqDist) {
+
+            if (sqDist < nearestSqDist)
+            {
                 nearest = i;
                 nearestSqDist = sqDist;
             }
@@ -48,10 +53,22 @@ public class editablemesh : MonoBehaviour
         {
             vertices[nearest] += Vector3.up;
             mesh.vertices = vertices;
-            mesh.RecalculateBounds(); 
+            mesh.RecalculateBounds();
             GetComponent<MeshCollider>().sharedMesh = null;
             GetComponent<MeshCollider>().sharedMesh = mesh;
-        }
+        } 
+        var rotation = GetComponent<Transform>().rotation;
+        Vector3 transf = GetComponent<Transform>().position;
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource> { };
+        var buildsrc = new NavMeshBuildSource { };
+        buildsrc.sourceObject = mesh;
+        sources.Add(buildsrc);
+        NavMeshBuilder.BuildNavMeshData(settings, sources, mesh.bounds, transf, rotation);
+        UnityEditor.AI.NavMeshBuilder.BuildNavMesh();
+
+
+
+
         /*
         for (int i = 0; i < vertices.Length; i++)
         {
@@ -82,5 +99,15 @@ public class editablemesh : MonoBehaviour
             GetComponent<MeshCollider>().sharedMesh = null;
             GetComponent<MeshCollider>().sharedMesh = mesh;
         }
+        var rotation = GetComponent<Transform>().rotation;
+        Vector3 transf = GetComponent<Transform>().position;
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource> { };
+        var buildsrc = new NavMeshBuildSource { };
+        buildsrc.sourceObject = mesh;
+        sources.Add(buildsrc);
+        mesh.RecalculateBounds();
+        NavMeshBuilder.BuildNavMeshData(settings, sources, mesh.bounds, transf, rotation);
+        UnityEditor.AI.NavMeshBuilder.BuildNavMesh();
+
     }
 }
