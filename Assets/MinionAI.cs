@@ -11,6 +11,7 @@ public class MinionAI : MonoBehaviour
     private NavMeshAgent agent;
     private bool hasWondered = false;
     private float health = 100;
+    private float tickerTocker = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +30,8 @@ public class MinionAI : MonoBehaviour
         }
 
         wander();
-        
+
+        tickerTocker += Time.deltaTime;
     }
 
     void move_towards(float x, float y, float z)
@@ -42,7 +44,7 @@ public class MinionAI : MonoBehaviour
     {
         
 
-        bool canSettle = false;
+        bool canSettle = true;
 
         Collider[] colliders = Physics.OverlapBox(transform.position, new Vector3(6, 0.25f, 6));
 
@@ -79,8 +81,6 @@ public class MinionAI : MonoBehaviour
         if(Vector3.Distance(transform.position,agent.destination) < 2)
         {
             
-            
-            
             goPos = wander_point(30);
             print("wandering");
 
@@ -104,12 +104,12 @@ public class MinionAI : MonoBehaviour
             move_towards(hit.point.x,hit.point.y,hit.point.z);
             
 
-            if (hasWondered)
+            if (tickerTocker >= 3)
             {
                 settle();
             }
 
-            hasWondered = true;
+            
         }
         
     }
@@ -117,8 +117,9 @@ public class MinionAI : MonoBehaviour
     void become_house()
     {
         //Turn into haus.
-        Instantiate(house, transform.position, Quaternion.identity);
+        GameObject haus = Instantiate(house, transform.position, Quaternion.identity);
         Destroy(gameObject);
+        haus.GetComponent<Spanwer>().collisionMesh = meshCollider;
         this.enabled = false;
     }
 }
